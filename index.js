@@ -34,6 +34,7 @@ const upload = multer({
 
 // 中间件
 app.use(express.json());
+app.use(express.static('public')); // 提供静态文件服务
 
 // PDF转图片API接口
 app.post('/convert-pdf', upload.single('pdf'), async (req, res) => {
