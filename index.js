@@ -4,6 +4,7 @@ const { exec } = require('child_process');
 const path = require("path");
 const fs = require('fs');
 const util = require('util');
+const sharp = require('sharp');
 const execAsync = util.promisify(exec);
 
 const app = express();
@@ -59,7 +60,18 @@ app.post('/convert-pdf', upload.single('pdf'), async (req, res) => {
       // 检查生成的文件是否存在
       if (fs.existsSync(outputFile)) {
         // 读取图片文件并转换为base64
-        const imageBuffer = fs.readFileSync(outputFile);
+        let imageBuffer = fs.readFileSync(outputFile);
+
+        try {
+          const metadata = await sharp(imageBuffer).metadata();
+          if (metadata.width && metadata.height && metadata.width > metadata.height) {
+            // Auto-rotate landscape scans so the preview is vertical
+            imageBuffer = await sharp(imageBuffer).rotate(90).toBuffer();
+          }
+        } catch (rotationError) {
+          console.warn('Auto-rotation skipped:', rotationError.message);
+        }
+
         const base64Image = imageBuffer.toString('base64');
 
         // 清理临时文件
