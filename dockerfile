@@ -1,5 +1,5 @@
 # 用 Node.js 官方镜像
-FROM node:18
+FROM dziuivcxl6bco3.xuanyuan.run/node:18
 
 # 安装 Poppler
 RUN apt-get update && apt-get install -y poppler-utils && rm -rf /var/lib/apt/lists/*
